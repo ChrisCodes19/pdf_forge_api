@@ -1,0 +1,178 @@
+openapi: 3.0.3
+info:
+  title: PDF Forge API
+  description: >
+    Generate PDFs on demand. Convert any HTML into a PDF, turn structured
+    JSON into a styled invoice/receipt, or merge multiple PDFs into one.
+    Pure compute, no data storage.
+  version: 0.1.0
+servers:
+  # Replace with your deployed base URL (e.g. https://pdf-forge-api.fly.dev).
+  # When listed on RapidAPI, RapidAPI proxies to this server for you.
+  - url: https://YOUR-APP.fly.dev
+    description: Production
+paths:
+  /v1/html-to-pdf:
+    post:
+      operationId: htmlToPdf
+      summary: Convert HTML to a PDF
+      description: Send an HTML string and receive a rendered PDF document.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [html]
+              properties:
+                html:
+                  type: string
+                  description: The HTML document or fragment to render.
+                  example: "<h1>Hello PDF</h1><p>Made by the API.</p>"
+                options:
+                  type: object
+                  description: Optional page settings.
+                  properties:
+                    format:
+                      type: string
+                      example: A4
+                    landscape:
+                      type: boolean
+                      example: false
+                    printBackground:
+                      type: boolean
+                      example: true
+                    scale:
+                      type: number
+                      minimum: 0.1
+                      maximum: 2
+                      example: 1
+      responses:
+        "200":
+          description: The rendered PDF.
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Missing or invalid html.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "403":
+          description: Request did not come through RapidAPI.
+  /v1/invoice:
+    post:
+      operationId: createInvoice
+      summary: Generate an invoice PDF from JSON
+      description: >
+        Send company, customer, and line-item data. The API computes line
+        amounts, subtotal, tax, discount, and total, then returns a styled PDF.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [company, customer, items]
+              properties:
+                title: { type: string, example: Invoice }
+                number: { type: string, example: INV-1001 }
+                date: { type: string, example: "2026-07-12" }
+                dueDate: { type: string, example: "2026-07-26" }
+                currency: { type: string, example: USD }
+                accent:
+                  type: string
+                  description: Hex accent color for the template.
+                  example: "#2563eb"
+                taxRate: { type: number, example: 8.5 }
+                discount: { type: number, example: 0 }
+                notes: { type: string, example: "Payment due within 14 days." }
+                company:
+                  type: object
+                  required: [name]
+                  properties:
+                    name: { type: string, example: Acme LLC }
+                    address: { type: string, example: "1 Market St\nSF, CA" }
+                    email: { type: string, example: billing@acme.co }
+                    logoUrl:
+                      type: string
+                      description: Must be an https URL.
+                      example: "https://example.com/logo.png"
+                customer:
+                  type: object
+                  required: [name]
+                  properties:
+                    name: { type: string, example: Jane Doe }
+                    address: { type: string }
+                    email: { type: string, example: jane@example.com }
+                items:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required: [description, quantity, unitPrice]
+                    properties:
+                      description: { type: string, example: Design work }
+                      quantity: { type: number, example: 10 }
+                      unitPrice: { type: number, example: 90 }
+      responses:
+        "200":
+          description: The rendered invoice PDF.
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Validation error.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "403":
+          description: Request did not come through RapidAPI.
+  /v1/merge:
+    post:
+      operationId: mergePdfs
+      summary: Merge multiple PDFs into one
+      description: >
+        Send 2–20 base64-encoded PDFs and receive a single merged PDF, in order.
+        Lightweight (no browser rendering).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [files]
+              properties:
+                files:
+                  type: array
+                  minItems: 2
+                  maxItems: 20
+                  description: Base64-encoded PDF files (data-URL prefix optional).
+                  items:
+                    type: string
+      responses:
+        "200":
+          description: The merged PDF.
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Fewer than 2 files, too many, or an invalid PDF.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "403":
+          description: Request did not come through RapidAPI.
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string

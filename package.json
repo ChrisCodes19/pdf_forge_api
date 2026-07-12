@@ -1,0 +1,21 @@
+{
+  "name": "pdf-forge-api",
+  "version": "0.1.0",
+  "description": "PDF / document-generation API: HTML-to-PDF and JSON-to-invoice endpoints.",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@fastify/rate-limit": "^10.2.1",
+    "eta": "^3.5.0",
+    "fastify": "^5.2.0",
+    "pdf-lib": "^1.17.1",
+    "puppeteer": "^23.11.1"
+  }
+}
