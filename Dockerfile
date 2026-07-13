@@ -7,10 +7,11 @@ WORKDIR /home/pptruser/app
 
 # Install deps first for better layer caching.
 COPY --chown=pptruser:pptruser package.json ./
-# Skip Puppeteer's own Chromium download — the base image already provides one.
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable \
-    NODE_ENV=production
+# Let `npm install` download the exact Chrome build this Puppeteer version needs,
+# into Puppeteer's own cache dir where it looks by default. (We deliberately do NOT
+# set PUPPETEER_EXECUTABLE_PATH — the base image's Chrome is NOT at
+# /usr/bin/google-chrome-stable in this version, which was causing launch failures.)
+ENV NODE_ENV=production
 RUN npm install --omit=dev
 
 COPY --chown=pptruser:pptruser . .
