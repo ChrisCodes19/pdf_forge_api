@@ -22,12 +22,13 @@ function getBrowser() {
     browserPromise = puppeteer.launch({
       headless: true,
       // These flags let Chromium run inside a minimal container (no sandbox namespaces).
+      // NOTE: do NOT add '--single-process' — it crashes Chromium in containers
+      // (Render/Docker), producing "Target closed"/protocol errors during render.
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
         '--disable-dev-shm-usage',
         '--disable-gpu',
-        '--single-process',
       ],
     });
     // If launch fails, clear the cached promise so the next call can retry.
