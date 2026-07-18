@@ -3,8 +3,60 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PDF Forge API — HTML → PDF, Invoices & Merge</title>
-<meta name="description" content="A simple REST API to turn HTML into PDFs, generate styled invoices from JSON, and merge PDFs. Free tier available.">
+
+<!-- Primary SEO -->
+<title>HTML to PDF API · Invoice & Merge PDF API — PDF Forge</title>
+<meta name="description" content="PDF Forge is a fast HTML to PDF API. Convert HTML to PDF, generate invoice PDFs from JSON, and merge PDFs via a simple REST API. Free tier — start in minutes.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://chriscodes19.github.io/pdf_forge_api/">
+<meta name="theme-color" content="#2563eb">
+
+<!-- Open Graph / social -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="PDF Forge — HTML to PDF, Invoice & Merge PDF API">
+<meta property="og:description" content="Convert HTML to PDF, generate invoices from JSON, and merge PDFs via a simple REST API. Free tier available.">
+<meta property="og:url" content="https://chriscodes19.github.io/pdf_forge_api/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PDF Forge — HTML to PDF, Invoice & Merge PDF API">
+<meta name="twitter:description" content="Convert HTML to PDF, generate invoices from JSON, and merge PDFs via a simple REST API. Free tier available.">
+
+<!-- Structured data: software + offers -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "PDF Forge API",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Any (REST API)",
+  "description": "A fast HTML to PDF API. Convert HTML to PDF, generate invoice PDFs from JSON, and merge PDFs via a simple REST API.",
+  "url": "https://chriscodes19.github.io/pdf_forge_api/",
+  "offers": [
+    { "@type": "Offer", "name": "Basic", "price": "0", "priceCurrency": "USD" },
+    { "@type": "Offer", "name": "Pro", "price": "9.99", "priceCurrency": "USD" },
+    { "@type": "Offer", "name": "Ultra", "price": "49.99", "priceCurrency": "USD" }
+  ]
+}
+</script>
+<!-- Structured data: FAQ (eligible for FAQ rich snippet) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "How do I convert HTML to PDF with an API?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Send a POST request to the /v1/html-to-pdf endpoint with your HTML in a JSON body. PDF Forge renders it with headless Chromium and returns a PDF file in the response." } },
+    { "@type": "Question", "name": "Is there a free HTML to PDF API?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. PDF Forge has a free Basic plan that includes 50 PDFs per month across all endpoints, so you can convert HTML to PDF, generate invoices, and merge PDFs at no cost." } },
+    { "@type": "Question", "name": "Can I generate invoice PDFs from JSON?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. POST your company, customer, and line-item data as JSON to /v1/invoice and PDF Forge calculates the subtotal, tax, and total and returns a styled invoice PDF." } },
+    { "@type": "Question", "name": "How do I merge PDFs via API?",
+      "acceptedAnswer": { "@type": "Answer", "text": "POST an array of base64-encoded PDFs to /v1/merge and PDF Forge combines them into a single PDF, in order." } },
+    { "@type": "Question", "name": "Which programming languages are supported?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Any language that can make an HTTP request — JavaScript/Node.js, Python, PHP, Ruby, Go, Java, C#, and more. It is a standard REST API." } }
+  ]
+}
+</script>
+
 <style>
   :root {
     --bg: #0b0f19; --bg2: #111827; --card: #151c2c; --text: #e6e9f0;
@@ -45,7 +97,7 @@
     background: linear-gradient(90deg, var(--accent), var(--accent2));
     -webkit-background-clip: text; background-clip: text; color: transparent;
   }
-  .hero p { font-size: clamp(16px, 2.5vw, 20px); color: var(--muted); max-width: 620px; margin: 0 auto 28px; }
+  .hero p { font-size: clamp(16px, 2.5vw, 20px); color: var(--muted); max-width: 640px; margin: 0 auto 28px; }
   .cta-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 
   /* Sections */
@@ -65,6 +117,15 @@
   .card p { margin: 0; color: var(--muted); font-size: 15px; }
   .card code { color: var(--accent2); font-size: 13px; }
 
+  /* Use-case chips */
+  .uses { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
+  .use {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px; text-align: center; font-weight: 600; font-size: 15px;
+  }
+  .use span { display: block; font-size: 22px; margin-bottom: 6px; }
+  .use small { display: block; font-weight: 400; color: var(--muted); font-size: 13px; margin-top: 4px; }
+
   /* Code block */
   .code-wrap {
     background: var(--code-bg); border: 1px solid var(--border); border-radius: 14px;
@@ -73,6 +134,18 @@
   pre { margin: 0; padding: 22px; color: #d6deee; font-size: 13.5px; line-height: 1.7;
         font-family: "SF Mono", Menlo, Consolas, monospace; }
   .tok-cmd { color: #7dd3fc; } .tok-str { color: #86efac; } .tok-flag { color: #fca5a5; }
+
+  /* FAQ */
+  .faq { max-width: 760px; margin: 0 auto; }
+  .faq details {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 4px 20px; margin-bottom: 12px;
+  }
+  .faq summary { cursor: pointer; font-weight: 600; padding: 14px 0; list-style: none; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; float: right; color: var(--accent); font-weight: 700; }
+  .faq details[open] summary::after { content: "–"; }
+  .faq details p { margin: 0 0 16px; color: var(--muted); }
 
   /* Pricing */
   .price-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
@@ -103,9 +176,10 @@
 
 <div class="wrap">
   <section class="hero">
-    <h1>Turn anything into a <span class="grad">PDF</span>,<br>with one API call.</h1>
-    <p>Convert HTML to PDF, generate styled invoices from JSON, and merge documents —
-       a fast, no-nonsense REST API. Free tier to start.</p>
+    <h1>Turn HTML into a <span class="grad">PDF</span><br>with one API call.</h1>
+    <p><strong>PDF Forge</strong> is a fast HTML to PDF API — convert HTML to PDF, generate
+       styled invoice PDFs from JSON, and merge PDFs, all through one simple REST API.
+       Free tier to start.</p>
     <div class="cta-row">
       <a class="btn" href="https://rapidapi.com/foog15b/api/pdf-forge-api">Start Free on RapidAPI</a>
       <a class="btn ghost" href="#docs">See the code</a>
@@ -113,19 +187,19 @@
   </section>
 
   <section>
-    <h2>Three endpoints, zero fuss</h2>
+    <h2>One API, three PDF tools</h2>
     <p class="sub">Pure compute. No accounts to render against, no data stored, no surprises.</p>
     <div class="grid">
       <div class="card">
         <div class="icon">📄</div>
-        <h3>HTML → PDF</h3>
-        <p>Send HTML, get a pixel-perfect PDF back. Fonts, CSS, backgrounds — all rendered by Chromium.</p>
+        <h3>HTML to PDF</h3>
+        <p>Send HTML, get a pixel-perfect PDF back. Fonts, CSS, and backgrounds are rendered by real headless Chromium.</p>
         <p><code>POST /v1/html-to-pdf</code></p>
       </div>
       <div class="card">
         <div class="icon">🧾</div>
-        <h3>JSON → Invoice</h3>
-        <p>Post line items and we compute totals + tax and return a clean, branded invoice PDF.</p>
+        <h3>JSON to Invoice PDF</h3>
+        <p>Post line items and PDF Forge computes totals and tax, returning a clean, branded invoice PDF.</p>
         <p><code>POST /v1/invoice</code></p>
       </div>
       <div class="card">
@@ -137,13 +211,27 @@
     </div>
   </section>
 
+  <section>
+    <h2>What you can build</h2>
+    <p class="sub">Anywhere your app needs to generate a PDF on the fly.</p>
+    <div class="uses">
+      <div class="use"><span>🧾</span>Invoices<small>&amp; receipts</small></div>
+      <div class="use"><span>📊</span>Reports<small>&amp; statements</small></div>
+      <div class="use"><span>🎫</span>Tickets<small>&amp; passes</small></div>
+      <div class="use"><span>🏅</span>Certificates<small>&amp; badges</small></div>
+      <div class="use"><span>📦</span>Packing slips<small>&amp; labels</small></div>
+      <div class="use"><span>⬇️</span>“Export to PDF”<small>in your app</small></div>
+    </div>
+  </section>
+
   <section id="docs">
     <h2>Up and running in 30 seconds</h2>
     <p class="sub">One request. A real PDF in the response body.</p>
     <div class="code-wrap">
-<pre><span class="tok-cmd">curl</span> -X POST https://your-api.p.rapidapi.com/v1/html-to-pdf \
+<pre><span class="tok-cmd">curl</span> -X POST https://pdf-forge-api.p.rapidapi.com/v1/html-to-pdf \
   -H <span class="tok-str">'Content-Type: application/json'</span> \
   -H <span class="tok-str">'X-RapidAPI-Key: YOUR_KEY'</span> \
+  -H <span class="tok-str">'X-RapidAPI-Host: pdf-forge-api.p.rapidapi.com'</span> \
   -d <span class="tok-str">'{"html":"&lt;h1&gt;Hello PDF&lt;/h1&gt;"}'</span> \
   <span class="tok-flag">--output</span> hello.pdf</pre>
     </div>
@@ -173,10 +261,43 @@
       <a class="btn" href="https://rapidapi.com/foog15b/api/pdf-forge-api">Get your API key →</a>
     </div>
   </section>
+
+  <section>
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details open>
+        <summary>How do I convert HTML to PDF with an API?</summary>
+        <p>Send a POST request to <code>/v1/html-to-pdf</code> with your HTML in a JSON body.
+           PDF Forge renders it with headless Chromium and returns a PDF file in the response —
+           your CSS, fonts, and backgrounds come out exactly as they look in a browser.</p>
+      </details>
+      <details>
+        <summary>Is there a free HTML to PDF API?</summary>
+        <p>Yes. The free Basic plan includes 50 PDFs per month across all endpoints, so you can
+           convert HTML to PDF, generate invoices, and merge PDFs at no cost while you evaluate.</p>
+      </details>
+      <details>
+        <summary>Can I generate invoice PDFs from JSON?</summary>
+        <p>Yes. POST your company, customer, and line-item data as JSON to <code>/v1/invoice</code>
+           and PDF Forge calculates the subtotal, tax, and total, then returns a styled invoice PDF.</p>
+      </details>
+      <details>
+        <summary>How do I merge PDFs via API?</summary>
+        <p>POST an array of base64-encoded PDFs to <code>/v1/merge</code> and PDF Forge combines
+           them into a single PDF, preserving order.</p>
+      </details>
+      <details>
+        <summary>Which programming languages are supported?</summary>
+        <p>Any language that can make an HTTP request — JavaScript/Node.js, Python, PHP, Ruby,
+           Go, Java, C#, and more. It is a standard REST API.</p>
+      </details>
+    </div>
+  </section>
 </div>
 
 <footer>
-  <div class="wrap">PDF Forge API · Built on RapidAPI · <a href="https://rapidapi.com/foog15b/api/pdf-forge-api">Documentation</a></div>
+  <div class="wrap">PDF Forge — HTML to PDF, Invoice &amp; Merge PDF API · Built on RapidAPI ·
+    <a href="https://rapidapi.com/foog15b/api/pdf-forge-api">Get API Key</a></div>
 </footer>
 </body>
 </html>
